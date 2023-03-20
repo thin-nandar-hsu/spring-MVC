@@ -12,8 +12,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.w3c.dom.stylesheets.LinkStyle;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class BookController {
@@ -22,6 +27,51 @@ public class BookController {
     private BookService bookService;
 
 
+    @GetMapping("/book/update")
+    public String updateForm(@RequestParam("id")int id,Model model){
+        model.addAttribute("book",bookService.findBookById(id));
+        this.bookId=id;
+        model.addAttribute("authors",bookService.listAuthors());
+        return "book-update";
+
+    }
+
+    int bookId;
+
+    @PostMapping("/book/update")
+    public String saveUpdateBook(@Valid Book book,BindingResult bindingResult,Model model,RedirectAttributes redirectAttributes){
+        if(bindingResult.hasErrors()){
+            model.addAttribute("book",bookService.findBookById(book.getId()));
+            model.addAttribute("authors",bookService.listAuthors());
+            return "book-update";
+        }
+        book.setId(bookId);
+        bookService.update(book);
+        redirectAttributes.addFlashAttribute("update",true);
+        return "redirect:/list-books";
+    }
+
+    @GetMapping("/book/ui-update")
+    public String uIUpdate(@RequestParam("id")int id,Model model) {
+        Book updateBook = bookService.findBookById(id);
+        List<Book> bookList = bookService.listBooks()
+                .stream()
+                .map(b -> {
+                    if(b.equals(updateBook)) {
+                        b.setRender(true);
+                    }
+                    return b;
+                }).collect(Collectors.toList());
+        model.addAttribute("books", bookList);
+        return "books";
+    }
+
+    @GetMapping("/book/remove")
+     public String removeBook(@RequestParam("id")int id,RedirectAttributes redirectAttributes ){
+         bookService.removeBook(id);
+         redirectAttributes.addFlashAttribute("delete",true);
+         return "redirect:/list-books";
+     }
 
     @GetMapping({"/","/home"})
     public ModelAndView index(){
@@ -74,7 +124,9 @@ public class BookController {
 
     @RequestMapping("/list-books")
     public String listAllBooks(Model model){
+        model.addAttribute("delete",model.containsAttribute("delete"));
         model.addAttribute("success",model.containsAttribute("success"));
+        model.addAttribute("update",model.containsAttribute("update"));
         model.addAttribute("books",bookService.listBooks());
         return "books";
     }
