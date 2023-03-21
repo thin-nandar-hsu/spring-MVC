@@ -72,4 +72,8 @@ public class BookService {
         existBook.setPublisher(book.getPublisher());
         existBook.setImgUrl(book.getImgUrl());
     }
+
+    public void updateAgain(Book updateBook){
+        bookDao.saveAndFlush(updateBook);
+    }
 }

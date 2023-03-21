@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html th:replace="layout/masterLayout :: layout(~{::main})"  xmlns:th="http://www.thymeleaf.org">
+<html th:replace="layout/masterLayout :: layout(~{::main})" xmlns:th="http://www.thymeleaf.org">
 
 <body>
 
@@ -18,50 +18,63 @@
                 </div>
                 <table class="table table-striped">
                     <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Title</th>
-                            <th>Price</th>
-                            <th>Year Published</th>
-                            <th>Publisher</th>
-                            <th>Author</th>
-                            <th>Action</th>
-                            <th>Action</th>
-                        </tr>
+                    <tr>
+                        <th>Id</th>
+                        <th>Title</th>
+                        <th>Price</th>
+                        <th>Year Published</th>
+                        <th>Publisher</th>
+                        <th>Author</th>
+                        <th>Action</th>
+                        <th>Action</th>
+                    </tr>
                     </thead>
                     <tbody>
-                    <form action="#">
+                    <form th:action="@{/book/ui/update}" th:object="${updateBook}" method="post">
                         <tr th:each="book : ${books}">
                             <td th:text="${book.id}" th:if="${!book.render}"></td>
+                            <td th:if="${book.render}" th:text="${book.id}"></td>
 
                             <td th:text="${book.title}" th:if="${!book.render}"></td>
-                            <td th:if="${book.render}"><input type="text" class="form-control"  ></td>
+                            <td th:if="${book.render}"><input type="text" th:field="*{title}" class="form-control"></td>
 
-                            <td th:text="${'$'+ book.price}" th:if="${!book.render}"> </td>
-                            <td th:if="${book.render}"><input type="text" class="form-control"  ></td>
+                            <td th:text="${'$'+ book.price}" th:if="${!book.render}"></td>
+                            <td th:if="${book.render}"><input type="text" th:field="*{price}" class="form-control"></td>
 
                             <td th:text="${book.yearPublished}" th:if="${!book.render}"></td>
-                            <td th:if="${book.render}"><input type="text" class="form-control"  ></td>
+                            <td th:if="${book.render}"><input type="text" th:field="*{yearPublished}"
+                                                              class="form-control"></td>
 
                             <td th:text="${book.publisher}" th:if="${!book.render}"></td>
-                            <td th:if="${book.render}"><input type="text" class="form-control"  ></td>
-
-                            <td th:text="${book.author.name}"></td>
-
-                            <td>
-                                <a th:href="@{'/book/remove?id='+${book.id}}" class="btn btn-outline-danger"><i class="bi bi-trash"></i></a>
-
-                            </td>
-                            <td>
-                                <a th:href="@{'/book/ui-update?id='+${book.id}}" class="btn btn-outline-info"><i class="bi bi-pencil-square"></i></a>
+                            <td th:if="${book.render}"><input type="text" th:field="*{publisher}" class="form-control">
                             </td>
 
-                            <td></td>
+                            <td th:text="${book.author.name}" th:if="${!book.render}"></td>
+                            <td th:if="${book.render}" th:text="${book.author.name}"></td>
+
+
+                            <td th:if="${!book.render}">
+                                <a th:href="@{'/book/remove?id='+${book.id}}" class="btn btn-outline-danger"><i
+                                        class="bi bi-trash"></i></a>
+
+                            </td>
+                            <td th:if="${!book.render}">
+                                <a th:href="@{'/book/ui-update?id='+${book.id}}" class="btn btn-outline-info"><i
+                                        class="bi bi-pencil-square"></i></a>
+                            </td>
+
+
+                          <td th:if="${book.render}">
+                              <input type="submit" value="Save" class="btn btn-outline-primary">
+                          </td>
+
+
+
                         </tr>
                     </form>
                     </tbody>
                 </table>
-                <a th:href="@{/book-form}" class="btn btn-outline-primary" >New Books</a>
+                <a th:href=" @{/book-form}" class="btn btn-outline-primary" >New Books</a>
             </div>
         </div>
     </div>

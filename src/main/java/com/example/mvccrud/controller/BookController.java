@@ -27,6 +27,13 @@ public class BookController {
     private BookService bookService;
 
 
+    @GetMapping("/book/details")
+    public String detailsBook(@RequestParam("id")int id,Model model){
+        model.addAttribute("book",bookService.findBookById(id));
+        return "details-book";
+    }
+
+
     @GetMapping("/book/update")
     public String updateForm(@RequestParam("id")int id,Model model){
         model.addAttribute("book",bookService.findBookById(id));
@@ -51,9 +58,15 @@ public class BookController {
         return "redirect:/list-books";
     }
 
+    String imgUrl;
+    Author author;
+    int uiUpdateId;
     @GetMapping("/book/ui-update")
     public String uIUpdate(@RequestParam("id")int id,Model model) {
         Book updateBook = bookService.findBookById(id);
+        imgUrl=updateBook.getImgUrl();
+        this.author=updateBook.getAuthor();
+        this.uiUpdateId=updateBook.getId();
         List<Book> bookList = bookService.listBooks()
                 .stream()
                 .map(b -> {
@@ -62,8 +75,23 @@ public class BookController {
                     }
                     return b;
                 }).collect(Collectors.toList());
+        model.addAttribute("updateBook",updateBook);
         model.addAttribute("books", bookList);
         return "books";
+    }
+
+    @PostMapping("/book/ui/update")
+    public String updateBookAgain(Book updateBook,BindingResult result){
+        if(result.hasErrors()){
+            return "redirect:/book/ui-update";
+        }
+        updateBook.setImgUrl(imgUrl);
+        updateBook.setAuthor(author);
+        updateBook.setId(uiUpdateId);
+
+        updateBook.setRender(false);
+        bookService.updateAgain(updateBook);
+          return "redirect:/list-books";
     }
 
     @GetMapping("/book/remove")
@@ -75,7 +103,7 @@ public class BookController {
 
     @GetMapping({"/","/home"})
     public ModelAndView index(){
-        return new ModelAndView("books","books",bookService.listBooks());
+        return new ModelAndView("home","books",bookService.listBooks());
 
 
     }
