@@ -1,5 +1,6 @@
 package com.example.mvccrud.controller;
 
+import com.example.mvccrud.ds.Cart;
 import com.example.mvccrud.entity.Author;
 import com.example.mvccrud.entity.Book;
 import com.example.mvccrud.service.BookService;
@@ -9,10 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.w3c.dom.stylesheets.LinkStyle;
@@ -25,6 +23,22 @@ public class BookController {
 
     @Autowired
     private BookService bookService;
+
+    @Autowired
+    private Cart cart;
+
+
+    @GetMapping("/cart/add-cart")
+    public String addToCart(@RequestParam("id")int id){
+        bookService.addToCart(id);
+        return "redirect:/book/details?id="+id;
+
+    }
+
+    @ModelAttribute("cartSize")
+    public int cartSize(){
+        return bookService.cartSize();
+    }
 
 
     @GetMapping("/book/details")
