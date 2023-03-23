@@ -1,9 +1,11 @@
 package com.example.mvccrud.controller;
 
 import com.example.mvccrud.ds.Cart;
+import com.example.mvccrud.ds.CartItem;
 import com.example.mvccrud.entity.Author;
 import com.example.mvccrud.entity.Book;
 import com.example.mvccrud.service.BookService;
+import jakarta.persistence.SecondaryTable;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
@@ -24,8 +27,64 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
-    @Autowired
-    private Cart cart;
+
+    private boolean changeButton;
+
+    @ModelAttribute("changeButton")
+    public boolean isChangeButton(){
+        return changeButton;
+    }
+    @GetMapping("/check-out-v1")
+    private String checkOutV1(Model model){
+        Set<CartItem> cartItems = bookService.getCartItems()
+                .stream()
+                .map( item -> {item.setRender(true); return item;})
+                .collect(Collectors.toSet());
+        model.addAttribute("cartItem",new CartItem());
+        model.addAttribute("cartItems",cartItems);
+        model.addAttribute("changeButton",true);
+        return "cart-view";
+
+    }
+
+    @PostMapping("/check-out-v2")
+    private String checkOutV2(CartItem cartItem){
+
+        int i =0;
+        for(CartItem cartItem1 : bookService.getCartItems()){
+            cartItem1.setQuantity(cartItem.getQuantityLinkedList().get(i));
+            cartItem1.setRender(false);
+             i++;
+        }
+
+        return "redirect:/view-cart";
+    }
+
+
+
+
+
+
+    @GetMapping("/view-cart")
+    public String viewCart(Model model){
+        model.addAttribute("cartItem",new CartItem());
+        model.addAttribute("changeButton",false);
+        model.addAttribute("cartItems",bookService.getCartItems());
+        return "cart-view";
+    }
+
+    @GetMapping("/cart/remove-cart")
+    public String removeFromCart(@RequestParam("id")int id){
+        bookService.removeFormCart(id);
+        return "redirect:/view-cart";
+    }
+
+
+    @GetMapping("/cart/clear-cart")
+    public String clearCart(){
+        bookService.clearCart();
+        return "redirect:/view-cart";
+    }
 
 
     @GetMapping("/cart/add-cart")
@@ -35,10 +94,23 @@ public class BookController {
 
     }
 
+    @ModelAttribute("totalPrice")
+    public double totalPrice(){
+     return bookService.getCartItems()
+                .stream()
+                .map(item -> item.getPrice() * item.getQuantity())
+                .mapToDouble(i -> i)
+                .sum();
+
+    }
+
     @ModelAttribute("cartSize")
     public int cartSize(){
         return bookService.cartSize();
     }
+
+
+
 
 
     @GetMapping("/book/details")

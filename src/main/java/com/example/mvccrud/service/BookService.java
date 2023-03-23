@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -93,5 +95,26 @@ public class BookService {
     }
     public int cartSize(){
         return cart.cartSize();
+    }
+
+    public Set<CartItem> getCartItems(){
+        return cart.getCartItems();
+    }
+
+
+
+    public Set<CartItem> removeFormCart(int id){
+        Set<CartItem> cartItems = getCartItems()
+                .stream()
+                .filter(i -> i.getId()!=id)
+                .collect(Collectors.toSet());
+                 cart.setCartItems(cartItems);
+
+           return cartItems;
+    }
+
+
+    public void clearCart(){
+        cart.clearCart();
     }
 }

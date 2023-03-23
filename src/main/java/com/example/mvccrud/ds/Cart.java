@@ -12,6 +12,10 @@ public class Cart {
 
     private Set<CartItem> cartItems= new HashSet<>();   // Set<> has *no duplicate*;
 
+    public Set<CartItem> getCartItems(){
+        return cartItems;
+    }
+
     public void addToCart(CartItem cartItem){
         this.cartItems.add(cartItem);
     }
@@ -26,5 +30,9 @@ public class Cart {
 
     public int cartSize(){
         return this.cartItems.size();
+    }
+
+    public void setCartItems(Set<CartItem> cartItems) {
+        this.cartItems = cartItems;
     }
 }
