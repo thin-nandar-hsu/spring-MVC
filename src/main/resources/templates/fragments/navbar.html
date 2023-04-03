@@ -1,30 +1,54 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 
 
 <body>
 
-<nav th:fragment="navbar" class="navbar navbar-expand-md navbar-dark bg-light">
-  <a th:href="@{/}" class="navbar-brand"><h3 class="text-info"><i class="bi bi-book"></i>&nbsp;Book </h3></a>
+<nav th:fragment="navbar" class="navbar navbar-expand-md navbar-dark " style="background: lavender">
+  <a th:href="@{/}" class="navbar-brand"><h3 class="text-info"><i class="bi bi-book"></i>&nbsp;Book &nbsp; </h3></a>
+<!--  <a th:href="@{/login}" class="navbar-brand pt-2 pr-4"><h5 class="text-info" sec:authorize="!isAuthenticated()"><i class="bi bi-person-fill-gear"></i> Admin </h5> </a>-->
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#myNav">
     <span class="navbar-toggler_icon"></span>
   </button>
 
   <div class="collapse navbar-collapse" id="myNav">
     <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
+      <li class="nav-item" >
         <a th:href="@{/home}" class="nav-link text-info">Home</a>
       </li>
-      <li class="nav-item">
+
+
+<!--      <li class="nav-item">-->
+<!--        <a th:href="@{/sign-up}" class="nav-link text-info">Admin</a>-->
+<!--      </li>-->
+
+
+      <li class="nav-item"  >
         <a th:href="@{/authors}" class="nav-link text-info">Authors</a>
       </li>
-      <li class="nav-item">
+      <li class="nav-item" >
         <a th:href="@{/list-books}" class="nav-link text-info">Book</a>
-      </li>
+      </li >
     </ul>
-  </div>
 
+    <div sec:authorize="isAuthenticated()">
+      <a href="javascript: document.logoutForm.submit()">Log Out</a>
+
+
+      <form name="logoutForm" th:action="@{/logout}" method="post" th:hidden="true">
+        <input hidden type="submit" value="SignOut">
+      </form>
+<!--    <li class="nav-item" sec:authorize="!isAuthenticated()">-->
+<!--      <a class="nav-link bg-dark text-light" th:href="@{/sign-up}">Sign Up</a>-->
+<!--    </li>-->
+<!--    <li class="nav-item" sec:authorize="!isAuthenticated()">-->
+<!--      <a class="nav-link bg-dark text-light" th:href="@{/login}">Log In</a>-->
+<!--    </li>-->
+
+
+  </div>
+  </div>
 </nav>
 
 </body>
